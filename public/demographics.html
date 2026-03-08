@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+       <title>Demographics Form</title>
+    </head>
+
+<body>
+    <!-- Page Title -->
+    <h1>Demographics Form</h1>
+
+    <!--This form collects demographic information from the user and then submits the data to the Node.js API endpoint-->
+    <form id="demographicsForm">
+
+        <!-- First Name Input -->
+        <label for="firstName">First Name:</label><br>
+        <input type="text" id="firstName" name="firstName"><br><br>
+
+        <!-- Last Name Input -->
+        <label for="lastName">Last Name:</label><br>
+        <input type="text" id="lastName" name="lastName"><br><br>
+
+        <!-- Age Input -->
+        <label for="age">Age:</label><br>
+        <input type="number" id="age" name="age"><br><br>
+
+        <!-- Email Input -->
+        <label for="email">Email:</label><br>
+        <input type="email" id="email" name="email"><br><br>
+
+        <!-- Gender Input -->
+        <!-- I Addeded this for Step 6: Dropdown menu-->
+        <label for="gender">Gender:</label><br>
+        <select id="gender" name="gender">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select><br><br>
+
+        <!-- City Input -->
+        <label for="city">City:</label><br>
+        <input type="text" id="city" name="city"><br><br>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        // This script runs when the user submits the form. It collects the values from the form fields,creates a JavaScript object and sends the data to the API
+        document.getElementById('demographicsForm').addEventListener('submit', async function (event) {
+
+        // Prevents the page from refreshing when the form is submitted
+        event.preventDefault();
+
+        // Gets the values from the form fields
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const age = document.getElementById('age').value;
+        const email = document.getElementById('email').value;
+        const gender = document.getElementById('gender').value;
+        const city = document.getElementById('city').value;
+
+        // I Addeded this for Step 6: Allow letters only for first name and last name
+        const lettersOnly = /^[A-Za-z]+$/;
+
+        // I Addeded this for Step 6: Allow letters and spaces for city names
+        const cityPattern = /^[A-Za-z\s]+$/;
+
+        // I Addeded this for Step 6: Check for a valid email format
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // I Addeded this for Step 6: May contain letters only
+        if (!lettersOnly.test(firstName)) {
+            alert('First name must contain letters only and no numbers.');
+            return;
+        }
+
+        // I Addeded this for Step 6: May contain letters only
+        if (!lettersOnly.test(lastName)) {
+            alert('Last name must contain letters only and no numbers.');
+            return;
+        }
+
+        // I Addeded this for Step 6: Numbers between 1 and 105
+        if (isNaN(age) || Number(age) < 1 || Number(age) > 105) {
+            alert('Age must be a number between 1 and 105.');
+            return;
+        }
+
+        // I Addeded this for Step 6: Verifys email is in the correct format
+        if (!emailPattern.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+        }
+
+        // I Addeded this for Step 6: Verifys that a gender option was selected
+        if (gender === '') {
+            alert('Please select a gender.');
+            return;
+        }
+
+        // I Addeded this for Step 6: Only contains letters and spaces only
+        if (!cityPattern.test(city)) {
+            alert('City must contain letters only and no numbers.');
+            return;
+        }
+
+        // Contains the form values
+        const demographicData = {
+            firstName: firstName,
+            lastName: lastName,
+            age: age,
+            email: email,
+            gender: gender,
+            city: city
+            };
+
+        /* Sends the data to the server using fetch*/
+        const response = await fetch('/api/demographics', {
+            method: 'POST',
+            headers: {
+             'Content-Type': 'application/json'
+                },
+             body: JSON.stringify(demographicData)
+            });
+
+        // Converts the server response to JSON
+        const result = await response.json();
+
+        // Log the result in the browser console
+        console.log(result);
+
+        // Show successful message to the user
+        alert('Record submitted successfully.');
+
+        // I Addeded this for Step 6: Clears the form after a successful submission
+        document.getElementById('demographicsForm').reset();
+        });
+    </script>
+
+</body>
+
+</html>
